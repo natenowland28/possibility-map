@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fbf8f3;
+  --bg-deep: #f4eee4;
+  --ink: #1f1b16;
+  --ink-soft: #4a443c;
+  --muted: #8a8175;
+  --line: rgba(31, 27, 22, 0.09);
+  --card: rgba(255, 255, 255, 0.72);
+  --card-solid: #ffffff;
+
+  /* Section accents. The active one is copied into --accent by [data-section]. */
+  --ideal: #c27a2c;
+  --ideal-soft: #f6e6d0;
+  --vision: #6a58d6;
+  --vision-soft: #e6e1fa;
+  --vector: #23897b;
+  --vector-soft: #d5efe9;
+
+  --accent: #8a6a4a;
+  --accent-soft: #efe6da;
+}
+
+[data-section="ideal"] {
+  --accent: var(--ideal);
+  --accent-soft: var(--ideal-soft);
+}
+[data-section="vision"] {
+  --accent: var(--vision);
+  --accent-soft: var(--vision-soft);
+}
+[data-section="vector"] {
+  --accent: var(--vector);
+  --accent-soft: var(--vector-soft);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --color-card-solid: var(--card-solid);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-ideal: var(--ideal);
+  --color-ideal-soft: var(--ideal-soft);
+  --color-vision: var(--vision);
+  --color-vision-soft: var(--vision-soft);
+  --color-vector: var(--vector);
+  --color-vector-soft: var(--vector-soft);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+}
+
+/* Soft paper grain over everything, for warmth. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.glass {
+  background: var(--card);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 1px 2px rgba(31, 27, 22, 0.04),
+    0 12px 40px -12px rgba(31, 27, 22, 0.12);
+}
+
+.shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(31, 27, 22, 0.05),
+    0 18px 50px -20px rgba(31, 27, 22, 0.18);
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(4%, -3%, 0) scale(1.06);
+  }
+  66% {
+    transform: translate3d(-3%, 4%, 0) scale(0.96);
+  }
+}
+.animate-drift {
+  animation: drift 22s ease-in-out infinite;
+}
+.animate-drift-slow {
+  animation: drift 34s ease-in-out infinite reverse;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+.animate-breathe {
+  animation: breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(31, 27, 22, 0.05) 0%,
+    rgba(31, 27, 22, 0.1) 50%,
+    rgba(31, 27, 22, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+}
+
+textarea {
+  field-sizing: content;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+textarea:focus-visible,
+input:not([type="checkbox"]):focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .grain::after {
+    display: none;
+  }
+  body {
+    background: white;
+  }
+  .print-break {
+    break-inside: avoid;
+  }
+}
