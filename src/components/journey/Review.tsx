@@ -50,7 +50,7 @@ export function Review() {
       <div className="no-print -mx-5 -mt-4 mb-4 sm:-mt-10 sm:mb-2">
         <div className="mx-auto flex max-w-6xl justify-end px-5">
           <Button
-            variant="outline"
+            variant="danger"
             size="sm"
             onClick={() => setStartOverOpen(true)}
             disabled={busy}

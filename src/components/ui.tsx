@@ -6,7 +6,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export const cn = clsx;
 
-type Variant = "primary" | "accent" | "ghost" | "outline" | "soft";
+type Variant = "primary" | "accent" | "ghost" | "outline" | "soft" | "danger";
 
 const variants: Record<Variant, string> = {
   primary:
@@ -16,6 +16,8 @@ const variants: Record<Variant, string> = {
   ghost: "text-ink-soft hover:text-ink hover:bg-ink/5 disabled:opacity-40",
   outline: "border border-line bg-white/60 text-ink hover:bg-white hover:border-ink/15 disabled:opacity-40",
   soft: "bg-accent-soft text-accent hover:brightness-[0.98] disabled:opacity-40",
+  danger:
+    "border border-red-200 bg-red-50 text-red-600 hover:border-red-300 hover:bg-red-100 hover:text-red-700 disabled:opacity-40",
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
