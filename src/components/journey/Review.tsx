@@ -5,7 +5,7 @@ import { ArrowLeft, RotateCcw, Send } from "lucide-react";
 import { useCallback, useState } from "react";
 import { SECTIONS } from "@/config/methodology";
 import { saveToServer, useJourney } from "@/lib/journey";
-import { Button } from "@/components/ui";
+import { Button, cn } from "@/components/ui";
 import { MapColumns } from "@/components/journey/MapColumns";
 import { StartOverDialog } from "@/components/journey/StartOverDialog";
 
@@ -21,6 +21,13 @@ export function Review() {
 
   const total = SECTIONS.reduce((n, s) => n + (journey.sections[s.id].themes?.filter((t) => t.approved).length ?? 0), 0);
   const valid = EMAIL.test(journey.email.trim());
+  const hint = !journey.email.trim()
+    ? "Add your email to continue."
+    : !valid
+      ? "That email doesn’t look quite right yet."
+      : !consent
+        ? "Tick the box above to send."
+        : "All set — ready when you are.";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +46,21 @@ export function Review() {
 
   return (
     <div className="mx-auto max-w-6xl">
+      {/* Same width and padding as the header bar, so the button lines up with its right edge. */}
+      <div className="no-print -mx-5 -mt-4 mb-4 sm:-mt-10 sm:mb-2">
+        <div className="mx-auto flex max-w-6xl justify-end px-5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setStartOverOpen(true)}
+            disabled={busy}
+            icon={<RotateCcw className="size-3.5" />}
+          >
+            Start over
+          </Button>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-2xl text-center">
         <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">Your map, in themes</div>
         <h1 className="font-display mt-4 text-5xl leading-[1.05] font-light text-ink sm:text-6xl">
@@ -91,15 +113,7 @@ export function Review() {
         {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-800">{error}</p>}
 
         <div className="mt-7 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setStartOverOpen(true)}
-            disabled={busy}
-            icon={<RotateCcw className="size-4" />}
-          >
-            Start over
-          </Button>
+          <p className={cn("text-center text-sm sm:text-left", valid && consent ? "text-emerald-700" : "text-muted")}>{hint}</p>
           <Button size="lg" type="submit" disabled={!valid || !consent} loading={busy} icon={<Send className="size-4" />}>
             Send my themes
           </Button>

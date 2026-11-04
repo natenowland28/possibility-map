@@ -77,7 +77,7 @@ export function StartOverDialog({ open, onClose }: Props) {
             className="absolute inset-0 bg-ink/30 backdrop-blur-[6px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, transition: { duration: 0.18 } }}
             onClick={onClose}
           />
           <motion.div
@@ -88,7 +88,7 @@ export function StartOverDialog({ open, onClose }: Props) {
             aria-describedby="start-over-desc"
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.98 }}
+            exit={{ opacity: 0, y: 12, scale: 0.98, transition: { duration: 0.16, ease: "easeIn" } }}
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
             className="relative max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-[28px] bg-card-solid p-6 shadow-[0_30px_80px_-20px_rgba(31,27,22,0.45)] sm:p-8"
           >
