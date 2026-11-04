@@ -15,6 +15,7 @@ import { ThemesStep } from "@/components/journey/ThemesStep";
 import { SectionDone } from "@/components/journey/SectionDone";
 import { Review } from "@/components/journey/Review";
 import { Done } from "@/components/journey/Done";
+import { UndoToast } from "@/components/journey/UndoToast";
 
 function Screen({ step }: { step: Step }) {
   switch (step.kind) {
@@ -66,6 +67,7 @@ function Shell() {
           </AnimatePresence>
         )}
       </main>
+      <UndoToast />
     </div>
   );
 }

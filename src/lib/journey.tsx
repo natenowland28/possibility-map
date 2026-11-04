@@ -118,6 +118,15 @@ interface Ctx {
   completeSection: (section: SectionId) => void;
   markSubmitted: () => void;
   restart: () => void;
+  /**
+   * Begin the exercise again before submitting.
+   * "revise" keeps everything and returns to the first question;
+   * "fresh" clears all answers, observations and themes (undoable for a short time).
+   */
+  startOver: (mode: "revise" | "fresh") => void;
+  canUndoStartOver: boolean;
+  undoStartOver: () => void;
+  dismissUndo: () => void;
 }
 
 const JourneyContext = createContext<Ctx | null>(null);
@@ -129,6 +138,8 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
   const [hasSavedProgress, setHasSaved] = useState(false);
   const [status, setStatus] = useState<AppStatus | null>(null);
   const lastSyncedStep = useRef<string>("");
+  const [undoSnapshot, setUndoSnapshot] = useState<Journey | null>(null);
+  const dismissUndo = useCallback(() => setUndoSnapshot(null), []);
 
   useEffect(() => {
     const saved = load();
@@ -156,8 +167,10 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
     if (!ready || journey.step.kind === "welcome" || journey.submittedAt) return;
     const key = JSON.stringify(journey.step);
     if (key === lastSyncedStep.current) return;
-    lastSyncedStep.current = key;
-    const t = setTimeout(() => saveToServer(journey).catch(() => {}), 600);
+    const t = setTimeout(() => {
+      lastSyncedStep.current = key;
+      saveToServer(journey).catch(() => {});
+    }, 600);
     return () => clearTimeout(t);
   }, [journey, ready]);
 
@@ -208,11 +221,37 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
       restart: () => {
         const fresh = newJourney();
         lastSyncedStep.current = "";
+        setUndoSnapshot(null);
         setJourney(fresh);
         setHasSaved(false);
       },
+      startOver: (mode) => {
+        if (mode === "revise") {
+          update((j) => ({ ...j, step: { kind: "question", section: 0, question: 0 } }));
+        } else {
+          // Same session id, so the facilitator's record is replaced rather than left behind.
+          setUndoSnapshot(journey);
+          const now = new Date().toISOString();
+          setJourney((j) => ({
+            ...j,
+            startedAt: now,
+            updatedAt: now,
+            step: { kind: "intro", section: 0 },
+            sections: { ideal: emptySection(), vision: emptySection(), vector: emptySection() },
+          }));
+        }
+        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      },
+      canUndoStartOver: undoSnapshot !== null,
+      undoStartOver: () => {
+        if (!undoSnapshot) return;
+        setJourney({ ...undoSnapshot, updatedAt: new Date().toISOString() });
+        setUndoSnapshot(null);
+        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+      },
+      dismissUndo,
     }),
-    [journey, ready, status, hasSavedProgress, update, patchSection],
+    [journey, ready, status, hasSavedProgress, update, patchSection, undoSnapshot, dismissUndo],
   );
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;
